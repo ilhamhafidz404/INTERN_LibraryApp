@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/services/auth_service.dart';
+import 'package:intern_libraryapp/tools/ExtractErrorMessage.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -24,7 +26,7 @@ class _LoginPageState extends State<LoginPage> {
         child: Stack(
           children: [
             Image.asset(
-              'images/login_bg.jpg',
+              'assets/images/login_bg.jpg',
               width: double.infinity,
               height: MediaQuery.of(context).size.height * 0.4,
               fit: BoxFit.cover,
@@ -66,8 +68,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   const SizedBox(height: 5), // Jarak antar teks
                   Text(
-                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. '
-                    'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s.',
+                    'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
                       fontSize: 14,
@@ -214,6 +215,31 @@ class _LoginPageState extends State<LoginPage> {
                                 );
                               } catch (e) {
                                 print('Login gagal: $e');
+                                // Menampilkan alert jika terjadi error
+                                // showDialog(
+                                //   context: context,
+                                //   builder: (context) => AlertDialog(
+                                //     title: Text('Login Gagal'),
+                                //     content: Text(
+                                //       extractErrorMessage(e.toString()),
+                                //     ),
+                                //     actions: [
+                                //       TextButton(
+                                //         onPressed: () => Navigator.pop(context),
+                                //         child: Text('OK'),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // );
+
+                                Fluttertoast.showToast(
+                                  msg: extractErrorMessage(e.toString()),
+                                  toastLength: Toast.LENGTH_LONG,
+                                  gravity: ToastGravity.BOTTOM,
+                                  backgroundColor: Color(0xFFed5d5e),
+                                  textColor: Colors.white,
+                                  fontSize: 16.0,
+                                );
                               }
                             },
                             child: const Text('Masuk'),

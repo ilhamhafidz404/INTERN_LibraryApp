@@ -13,10 +13,14 @@ class AuthService {
     );
 
     if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return LoginResponse.fromJson(data);
+      try {
+        final json = jsonDecode(response.body);
+        print(json);
+        return LoginResponse.fromJson(json);
+      } catch (e) {
+        throw Exception('Gagal parsing response: $e');
+      }
     } else {
-      // lempar error agar bisa ditangkap di UI
       throw Exception('Login gagal: ${response.body}');
     }
   }
