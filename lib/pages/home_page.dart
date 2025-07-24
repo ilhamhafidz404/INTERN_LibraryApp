@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intern_libraryapp/models/book_response.dart';
+import 'package:intern_libraryapp/pages/book/book_detail_page.dart';
 import 'package:intern_libraryapp/services/book_service.dart'; // pastikan ini ada
 
 class HomePage extends StatefulWidget {
@@ -116,7 +117,6 @@ class _HomePageState extends State<HomePage> {
                                 .toList(),
                           ),
                         ),
-                        const SizedBox(height: 24),
 
                         // Semua Buku
                         const Text(
@@ -144,38 +144,46 @@ class _HomePageState extends State<HomePage> {
   Widget buildBookCard(Book book) {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
-      child: Card(
-        color: Colors.transparent,
-        elevation: 0,
-        child: SizedBox(
-          width: 160,
-          height: 270,
-          child: Column(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
-                  width: 140,
-                  height: 180,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              const SizedBox(height: 8),
-              SizedBox(
-                width: 140,
-                child: Text(
-                  book.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 13,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => BookDetailPage(book: book)),
+          );
+        },
+        child: Card(
+          color: Colors.transparent,
+          elevation: 0,
+          child: SizedBox(
+            width: 160,
+            height: 270,
+            child: Column(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
+                    width: 140,
+                    height: 180,
+                    fit: BoxFit.cover,
                   ),
-                  textAlign: TextAlign.center,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            ],
+                const SizedBox(height: 8),
+                SizedBox(
+                  width: 140,
+                  child: Text(
+                    book.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -185,52 +193,62 @@ class _HomePageState extends State<HomePage> {
   Widget buildVerticalBookCard(Book book) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Card(
-        color: Colors.transparent,
-        shadowColor: Colors.transparent,
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
-                  width: 80,
-                  height: 130,
-                  fit: BoxFit.cover,
+      child: GestureDetector(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => BookDetailPage(book: book)),
+          );
+        },
+        child: Card(
+          color: Colors.transparent,
+          shadowColor: Colors.transparent,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(12),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
+                    width: 80,
+                    height: 130,
+                    fit: BoxFit.cover,
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      book.title,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        book.title,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      book.author,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        color: Colors.black54,
+                      const SizedBox(height: 8),
+                      Text(
+                        book.author,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.black54,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-              const Icon(Icons.arrow_forward_ios, size: 16),
-            ],
+                const Icon(Icons.arrow_forward_ios, size: 16),
+              ],
+            ),
           ),
         ),
       ),
