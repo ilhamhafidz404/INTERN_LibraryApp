@@ -14,6 +14,8 @@ class AuthService {
       body: jsonEncode({'username': username, 'password': password}),
     );
 
+    print(response.body);
+
     if (response.statusCode == 200) {
       try {
         final json = jsonDecode(response.body);

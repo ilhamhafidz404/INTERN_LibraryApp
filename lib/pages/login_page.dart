@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/models/login_response.dart';
 import 'package:intern_libraryapp/services/auth_service.dart';
 import 'package:intern_libraryapp/tools/extract_error_message.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intern_libraryapp/tools/save_auth.dart';
 import 'package:intern_libraryapp/tools/save_token.dart';
 
 class LoginPage extends StatefulWidget {
@@ -211,7 +213,17 @@ class _LoginPageState extends State<LoginPage> {
                                 );
 
                                 final token = loginResponse.data?.token ?? '';
-                                await saveToken(token);
+                                final authData = loginResponse.data?.auth;
+
+                                print(authData);
+
+                                if (authData != null) {
+                                  await saveAuth(
+                                    token,
+                                    authData.name,
+                                    authData.username,
+                                  );
+                                }
 
                                 Navigator.pushReplacementNamed(
                                   context,
