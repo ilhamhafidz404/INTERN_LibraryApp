@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intern_libraryapp/main_page.dart';
 import 'pages/login_page.dart';
 
-void main() => runApp(const MyApp());
+Future<void> main() async {
+  await dotenv.load();
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

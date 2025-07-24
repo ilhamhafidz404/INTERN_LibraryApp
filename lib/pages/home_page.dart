@@ -1,102 +1,147 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intern_libraryapp/models/book_response.dart';
+import 'package:intern_libraryapp/services/book_service.dart'; // pastikan ini ada
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  List<Book> books = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchBooks();
+  }
+
+  Future<void> fetchBooks() async {
+    try {
+      // NOTE: Gantilah token ini dengan yang sebenarnya dari login
+      final token = 'your_jwt_token_here';
+      final response = await BookService().getBooks(token);
+
+      setState(() {
+        books = response.data;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Gagal mengambil buku: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Gambar header
-            Stack(
-              children: [
-                Image.asset(
-                  'images/login_bg.jpg',
-                  width: double.infinity,
-                  height: screenHeight * 0.3,
-                  fit: BoxFit.cover,
-                ),
-                Container(
-                  width: double.infinity,
-                  height: MediaQuery.of(context).size.height * 0.3,
-                  decoration: const BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [Colors.transparent, Colors.black],
-                    ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Header
+                  Stack(
+                    children: [
+                      Image.asset(
+                        'assets/images/login_bg.jpg',
+                        width: double.infinity,
+                        height: screenHeight * 0.3,
+                        fit: BoxFit.cover,
+                      ),
+                      Container(
+                        width: double.infinity,
+                        height: screenHeight * 0.3,
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topCenter,
+                            end: Alignment.bottomCenter,
+                            colors: [Colors.transparent, Colors.black],
+                          ),
+                        ),
+                      ),
+                      const Positioned(
+                        left: 16,
+                        bottom: 16,
+                        child: Text(
+                          'Halo Admin',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            shadows: [
+                              Shadow(
+                                blurRadius: 4,
+                                color: Colors.black54,
+                                offset: Offset(1, 1),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-                Positioned(
-                  left: 16,
-                  bottom: 16,
-                  child: Text(
-                    'Halo Admin',
-                    style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                      shadows: [
-                        Shadow(
-                          blurRadius: 4,
-                          color: Colors.black54,
-                          offset: Offset(1, 1),
+
+                  // Content
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(16),
+                    decoration: const BoxDecoration(color: Colors.white),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Rekomendasi Buku
+                        const Text(
+                          "Rekomendasi Buku",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: books
+                                .take(5)
+                                .map((book) => buildBookCard(book))
+                                .toList(),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Semua Buku
+                        const Text(
+                          "Semua Buku",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Column(
+                          children: books
+                              .map((book) => buildVerticalBookCard(book))
+                              .toList(),
                         ),
                       ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
-            // Container utama
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(color: Colors.white),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // List horizontal
-                  const Text(
-                    "Rekomendasi Buku",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(5, (index) => buildBookCard()),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  // List vertical
-                  const Text(
-                    "Semua Buku",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 12),
-                  Column(
-                    children: List.generate(
-                      10,
-                      (index) => buildVerticalBookCard(),
                     ),
                   ),
                 ],
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
-  Widget buildBookCard() {
+  Widget buildBookCard(Book book) {
     return Padding(
       padding: const EdgeInsets.only(right: 12),
       child: Card(
@@ -109,19 +154,22 @@ class HomePage extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'images/covers/1.png',
+                child: Image.network(
+                  '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
                   width: 140,
                   height: 180,
                   fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(height: 8),
-              const SizedBox(
+              SizedBox(
                 width: 140,
                 child: Text(
-                  'Easy Manage Stock with Ilham Hafidz',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                  book.title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
                   textAlign: TextAlign.center,
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
@@ -134,7 +182,7 @@ class HomePage extends StatelessWidget {
     );
   }
 
-  Widget buildVerticalBookCard() {
+  Widget buildVerticalBookCard(Book book) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Card(
@@ -149,8 +197,8 @@ class HomePage extends StatelessWidget {
             children: [
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
-                child: Image.asset(
-                  'images/covers/1.png',
+                child: Image.network(
+                  '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
                   width: 80,
                   height: 130,
                   fit: BoxFit.cover,
@@ -160,20 +208,23 @@ class HomePage extends StatelessWidget {
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: const [
+                  children: [
                     Text(
-                      'Judul Buku',
-                      style: TextStyle(
+                      book.title,
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      'Deskripsi singkat buku atau nama penulis yang panjang banget supaya wrap.',
+                      book.author,
                       maxLines: 3,
                       overflow: TextOverflow.ellipsis,
-                      style: TextStyle(fontSize: 14, color: Colors.black54),
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black54,
+                      ),
                     ),
                   ],
                 ),

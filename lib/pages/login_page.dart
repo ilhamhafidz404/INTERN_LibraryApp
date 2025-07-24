@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/services/auth_service.dart';
-import 'package:intern_libraryapp/tools/ExtractErrorMessage.dart';
+import 'package:intern_libraryapp/tools/extract_error_message.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intern_libraryapp/tools/save_token.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -204,10 +205,13 @@ class _LoginPageState extends State<LoginPage> {
                           ElevatedButton(
                             onPressed: () async {
                               try {
-                                await AuthService().login(
+                                final loginResponse = await AuthService().login(
                                   _usernameController.text,
                                   _passwordController.text,
                                 );
+
+                                final token = loginResponse.data?.token ?? '';
+                                await saveToken(token);
 
                                 Navigator.pushReplacementNamed(
                                   context,
