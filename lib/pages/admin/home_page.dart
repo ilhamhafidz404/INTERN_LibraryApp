@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/pages/admin/book/list_book_page.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
-import 'package:intern_libraryapp/pages/student/profile/lending_history_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -80,7 +80,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 onTap: () => {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => LendingHistoryPage()),
+                    MaterialPageRoute(builder: (_) => AdminBookListPage()),
                   ),
                 },
               ),

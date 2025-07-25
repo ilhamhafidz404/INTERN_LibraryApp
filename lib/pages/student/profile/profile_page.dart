@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intern_libraryapp/pages/profile/edit_profile_page.dart';
-import 'package:intern_libraryapp/pages/profile/change_password_page.dart';
+import 'package:intern_libraryapp/pages/student/profile/edit_profile_page.dart';
+import 'package:intern_libraryapp/pages/student/profile/change_password_page.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
-import 'package:intern_libraryapp/pages/profile/lending_history_page.dart';
+import 'package:intern_libraryapp/pages/student/profile/lending_history_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
