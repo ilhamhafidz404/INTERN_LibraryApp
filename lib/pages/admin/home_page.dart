@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intern_libraryapp/pages/student/profile/change_password_page.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
 import 'package:intern_libraryapp/pages/student/profile/lending_history_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,8 +11,7 @@ class AdminHomePage extends StatefulWidget {
 }
 
 class _AdminHomePageState extends State<AdminHomePage> {
-  String userName = '';
-  String userNISN = '';
+  String adminName = '';
 
   @override
   void initState() {
@@ -25,8 +23,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     final prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      userName = prefs.getString('name') ?? 'Tidak Diketahui';
-      userNISN = prefs.getString('username') ?? '-';
+      adminName = prefs.getString('name') ?? 'Tidak Diketahui';
     });
   }
 
@@ -48,7 +45,11 @@ class _AdminHomePageState extends State<AdminHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil Saya'), centerTitle: true),
+      appBar: AppBar(
+        title: const Text('CMS Library App'),
+        centerTitle: true,
+        automaticallyImplyLeading: false,
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -58,27 +59,22 @@ class _AdminHomePageState extends State<AdminHomePage> {
               CircleAvatar(
                 radius: 40,
                 backgroundImage: NetworkImage(
-                  'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(userName))}',
+                  'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(adminName))}',
                 ),
               ),
               const SizedBox(height: 16),
               Text(
-                userName,
+                adminName,
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 4),
-              Text(
-                'NISN: $userNISN',
-                style: const TextStyle(color: Colors.grey),
-              ),
               const SizedBox(height: 24),
               const Divider(),
               ListTile(
-                leading: const Icon(Icons.history),
-                title: const Text('Riwayat Peminjaman'),
+                leading: const Icon(Icons.book),
+                title: const Text('Kelola Buku'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 16),
                 // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
                 onTap: () => {
@@ -87,27 +83,6 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     MaterialPageRoute(builder: (_) => LendingHistoryPage()),
                   ),
                 },
-              ),
-              ListTile(
-                leading: const Icon(Icons.person_outline),
-                title: const Text('Ganti Profil'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
-                onTap: () => {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(builder: (_) => EditAdminHomePage()),
-                  // ),
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.lock_outline),
-                title: const Text('Ubah Password'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => ChangePasswordPage()),
-                ),
               ),
               ListTile(
                 leading: const Icon(Icons.logout),
