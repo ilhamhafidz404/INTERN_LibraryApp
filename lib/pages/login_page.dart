@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:intern_libraryapp/models/login_response.dart';
 import 'package:intern_libraryapp/services/auth_service.dart';
 import 'package:intern_libraryapp/tools/extract_error_message.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intern_libraryapp/tools/save_auth.dart';
-import 'package:intern_libraryapp/tools/save_token.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -220,6 +218,7 @@ class _LoginPageState extends State<LoginPage> {
                                 if (authData != null) {
                                   await saveAuth(
                                     token,
+                                    authData.id,
                                     authData.name,
                                     authData.username,
                                   );
@@ -248,13 +247,21 @@ class _LoginPageState extends State<LoginPage> {
                                 //   ),
                                 // );
 
-                                Fluttertoast.showToast(
-                                  msg: extractErrorMessage(e.toString()),
-                                  toastLength: Toast.LENGTH_LONG,
-                                  gravity: ToastGravity.BOTTOM,
-                                  backgroundColor: Color(0xFFed5d5e),
-                                  textColor: Colors.white,
-                                  fontSize: 16.0,
+                                // Fluttertoast.showToast(
+                                //   msg: extractErrorMessage(e.toString()),
+                                //   toastLength: Toast.LENGTH_LONG,
+                                //   gravity: ToastGravity.BOTTOM,
+                                //   backgroundColor: Color(0xFFed5d5e),
+                                //   textColor: Colors.white,
+                                //   fontSize: 16.0,
+                                // );
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      extractErrorMessage(e.toString()),
+                                    ),
+                                  ),
                                 );
                               }
                             },

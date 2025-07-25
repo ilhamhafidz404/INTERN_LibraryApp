@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intern_libraryapp/main_page.dart';
+import 'package:intern_libraryapp/pages/edit_profile_page.dart';
 import 'pages/login_page.dart';
 
 Future<void> main() async {
