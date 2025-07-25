@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(primarySwatch: Colors.teal),
       home: const LoginPage(),
-      routes: {'/home': (context) => const MainPage()},
     );
   }
 }

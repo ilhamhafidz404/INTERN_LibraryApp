@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intern_libraryapp/models/book_response.dart';
-import 'package:intern_libraryapp/pages/book/book_detail_page.dart';
+import 'package:intern_libraryapp/pages/student/book/book_detail_page.dart';
 import 'package:intern_libraryapp/services/book_service.dart';
 
 class SearchPage extends StatefulWidget {

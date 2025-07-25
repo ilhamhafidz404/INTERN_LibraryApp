@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/main_page.dart';
+import 'package:intern_libraryapp/pages/admin/home_page.dart';
 import 'package:intern_libraryapp/services/auth_service.dart';
 import 'package:intern_libraryapp/tools/extract_error_message.dart';
 import 'package:intern_libraryapp/tools/save_auth.dart';
@@ -212,8 +214,6 @@ class _LoginPageState extends State<LoginPage> {
                                 final token = loginResponse.data?.token ?? '';
                                 final authData = loginResponse.data?.auth;
 
-                                print(authData);
-
                                 if (authData != null) {
                                   await saveAuth(
                                     token,
@@ -223,37 +223,23 @@ class _LoginPageState extends State<LoginPage> {
                                   );
                                 }
 
-                                Navigator.pushReplacementNamed(
-                                  context,
-                                  '/home',
-                                );
+                                if (authData?.level == "admin") {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => AdminHomePage(),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => MainPage(),
+                                    ),
+                                  );
+                                }
                               } catch (e) {
                                 print('Login gagal: $e');
-                                // Menampilkan alert jika terjadi error
-                                // showDialog(
-                                //   context: context,
-                                //   builder: (context) => AlertDialog(
-                                //     title: Text('Login Gagal'),
-                                //     content: Text(
-                                //       extractErrorMessage(e.toString()),
-                                //     ),
-                                //     actions: [
-                                //       TextButton(
-                                //         onPressed: () => Navigator.pop(context),
-                                //         child: Text('OK'),
-                                //       ),
-                                //     ],
-                                //   ),
-                                // );
-
-                                // Fluttertoast.showToast(
-                                //   msg: extractErrorMessage(e.toString()),
-                                //   toastLength: Toast.LENGTH_LONG,
-                                //   gravity: ToastGravity.BOTTOM,
-                                //   backgroundColor: Color(0xFFed5d5e),
-                                //   textColor: Colors.white,
-                                //   fontSize: 16.0,
-                                // );
 
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
