@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/pages/home_page.dart';
-import 'package:intern_libraryapp/pages/profile_page.dart';
+import 'package:intern_libraryapp/pages/profile/profile_page.dart';
 import 'package:intern_libraryapp/pages/search_page.dart';
 
 class MainPage extends StatefulWidget {

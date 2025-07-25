@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intern_libraryapp/models/book_response.dart';
 import 'package:intern_libraryapp/pages/book/book_detail_page.dart';
-import 'package:intern_libraryapp/services/book_service.dart'; // pastikan ini ada
+import 'package:intern_libraryapp/services/book_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,17 +16,19 @@ class _HomePageState extends State<HomePage> {
   List<Book> books = [];
   bool isLoading = true;
 
+  String userName = '';
+  String userNISN = '';
+
   @override
   void initState() {
     super.initState();
     fetchBooks();
+    loadUserData();
   }
 
   Future<void> fetchBooks() async {
     try {
-      // NOTE: Gantilah token ini dengan yang sebenarnya dari login
-      final token = 'your_jwt_token_here';
-      final response = await BookService().getBooks(token);
+      final response = await BookService().getBooks();
 
       setState(() {
         books = response.data;
@@ -37,6 +40,15 @@ class _HomePageState extends State<HomePage> {
         isLoading = false;
       });
     }
+  }
+
+  Future<void> loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      userName = prefs.getString('name') ?? 'Tidak Diketahui';
+      userNISN = prefs.getString('username') ?? '-';
+    });
   }
 
   @override
@@ -69,11 +81,11 @@ class _HomePageState extends State<HomePage> {
                           ),
                         ),
                       ),
-                      const Positioned(
+                      Positioned(
                         left: 16,
                         bottom: 16,
                         child: Text(
-                          'Halo Admin',
+                          'Halo $userName',
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -217,7 +229,7 @@ class _HomePageState extends State<HomePage> {
                   child: Image.network(
                     '${dotenv.env['BASE_URL']}/uploads/${book.cover}',
                     width: 80,
-                    height: 130,
+                    height: 110,
                     fit: BoxFit.cover,
                   ),
                 ),

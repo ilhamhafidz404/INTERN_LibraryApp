@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/services/profile_service.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePage extends StatefulWidget {
   @override
@@ -76,6 +77,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         gender: gender == 'Perempuan' ? 'F' : 'M',
         level: level ?? "X",
       );
+
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('name', nameController.text);
+      await prefs.setString('username', nisnController.text);
 
       ScaffoldMessenger.of(
         context,

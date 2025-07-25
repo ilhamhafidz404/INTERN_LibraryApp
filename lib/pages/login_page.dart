@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/services/auth_service.dart';
 import 'package:intern_libraryapp/tools/extract_error_message.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intern_libraryapp/tools/save_auth.dart';
 
 class LoginPage extends StatefulWidget {

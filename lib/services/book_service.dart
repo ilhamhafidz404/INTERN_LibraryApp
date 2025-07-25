@@ -4,7 +4,7 @@ import 'package:intern_libraryapp/models/book_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class BookService {
-  Future<BookResponse> getBooks(String token) async {
+  Future<BookResponse> getBooks() async {
     // final url = Uri.parse('http://localhost:3000/api/books');
     final url = Uri.parse('http://192.168.49.246:3000/api/books');
     // final url = Uri.parse('http://10.1.19.2:3000/api/books');
