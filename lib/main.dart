@@ -4,6 +4,7 @@ import 'pages/login_page.dart';
 
 Future<void> main() async {
   await dotenv.load();
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
 
