@@ -7,9 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class BookService {
   Future<BookResponse> getBooks() async {
-    // final url = Uri.parse('http://localhost:3000/api/books');
     final url = Uri.parse('http://192.168.49.246:3000/api/books');
-    // final url = Uri.parse('http://10.1.19.2:3000/api/books');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -82,6 +80,36 @@ class BookService {
     } else {
       final error = await response.stream.bytesToString();
       throw Exception('Gagal menyimpan buku: $error');
+    }
+  }
+
+  Future<void> deleteBook(int id) async {
+    final url = Uri.parse('http://192.168.49.246:3000/api/books/$id');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('Token tidak tersedia. Silakan login kembali.');
+    }
+
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode != 200 && response.statusCode != 204) {
+      try {
+        final body = json.decode(response.body);
+        final message = body['message'] ?? 'Gagal menghapus buku';
+        throw Exception(message);
+      } catch (e) {
+        print(e);
+        throw Exception('Gagal menghapus buku');
+      }
     }
   }
 }

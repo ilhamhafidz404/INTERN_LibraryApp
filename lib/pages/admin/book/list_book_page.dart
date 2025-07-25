@@ -59,12 +59,24 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
     // Navigasi ke halaman update book
   }
 
-  void _deleteBook(Book book) {
-    setState(() {
-      books.remove(book);
-      filteredBooks = books;
-    });
-    // TODO: Tambahkan panggilan API deleteBook jika tersedia
+  void _deleteBook(Book book) async {
+    print(book.id);
+    try {
+      await BookService().deleteBook(book.id);
+
+      setState(() {
+        books.remove(book);
+        filteredBooks = books;
+      });
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Buku berhasil dihapus')));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Gagal menghapus buku: $e')));
+    }
   }
 
   @override
