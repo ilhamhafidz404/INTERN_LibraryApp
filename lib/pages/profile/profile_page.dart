@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/pages/profile/edit_profile_page.dart';
 import 'package:intern_libraryapp/pages/profile/change_password_page.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
+import 'package:intern_libraryapp/pages/profile/lending_history_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -76,6 +77,18 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(height: 24),
               const Divider(),
+              ListTile(
+                leading: const Icon(Icons.history),
+                title: const Text('Riwayat Peminjaman'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
+                onTap: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => LendingHistoryPage()),
+                  ),
+                },
+              ),
               ListTile(
                 leading: const Icon(Icons.person_outline),
                 title: const Text('Ganti Profil'),
