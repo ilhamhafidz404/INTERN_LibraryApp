@@ -83,6 +83,49 @@ class BookService {
     }
   }
 
+  Future<void> updateBook({
+    required int id,
+    required String title,
+    required String publisher,
+    required String author,
+    required String isbn,
+    required String year,
+    required String total,
+    required File coverFile,
+  }) async {
+    final url = Uri.parse('http://192.168.49.246:3000/api/books/$id');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('Token tidak tersedia. Silakan login kembali.');
+    }
+
+    final request = http.MultipartRequest('PUT', url)
+      ..headers['Authorization'] = 'Bearer $token'
+      ..fields['title'] = title
+      ..fields['publisher'] = publisher
+      ..fields['author'] = author
+      ..fields['isbn'] = isbn
+      ..fields['year'] = year
+      ..fields['total'] = total
+      ..files.add(await http.MultipartFile.fromPath('cover', coverFile.path));
+
+    final response = await request.send();
+
+    if (response.statusCode != 200) {
+      final res = await http.Response.fromStream(response);
+      try {
+        final body = json.decode(res.body);
+        final message = body['message'] ?? 'Gagal mengupdate buku';
+        throw Exception(message);
+      } catch (e) {
+        throw Exception('Gagal mengupdate buku');
+      }
+    }
+  }
+
   Future<void> deleteBook(int id) async {
     final url = Uri.parse('http://192.168.49.246:3000/api/books/$id');
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intern_libraryapp/pages/admin/book/create_book_page.dart';
+import 'package:intern_libraryapp/pages/admin/book/update_book_page.dart';
 import 'package:intern_libraryapp/services/book_service.dart';
 import 'package:intern_libraryapp/models/book_response.dart'; // sesuaikan path model Book kamu
 
@@ -56,7 +57,10 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
   }
 
   void _updateBook(Book book) {
-    // Navigasi ke halaman update book
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AdminEditBookPage(book: book)),
+    );
   }
 
   void _deleteBook(Book book) async {
