@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/pages/edit_profile_page.dart';
+import 'package:intern_libraryapp/pages/login_page.dart';
+import 'package:intern_libraryapp/pages/profile/change_password_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -83,7 +85,19 @@ class _ProfilePageState extends State<ProfilePage> {
               leading: const Icon(Icons.lock_outline),
               title: const Text('Ubah Password'),
               trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-              onTap: () => Navigator.pushNamed(context, '/change-password'),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => ChangePasswordPage()),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.logout),
+              title: const Text('Logout'),
+              trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => LoginPage()),
+              ),
             ),
           ],
         ),

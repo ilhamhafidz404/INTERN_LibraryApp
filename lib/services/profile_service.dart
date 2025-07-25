@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:intern_libraryapp/models/profile_response.dart';
-import 'package:intern_libraryapp/tools/date_formatter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfileService {
@@ -82,6 +81,47 @@ class ProfileService {
     } else {
       // Gagal update
       throw Exception('Gagal update profile: ${response.body}');
+    }
+  }
+
+  Future<void> changePassword({
+    required String oldPassword,
+    required String newPassword,
+    required String confirmationNewPassword,
+  }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final studentId = prefs.getInt('id');
+    final token = prefs.getString('token');
+
+    if (studentId == null || token == null) {
+      throw Exception('ID atau token tidak ditemukan di SharedPreferences');
+    }
+
+    final url = Uri.parse(
+      'http://192.168.49.246:3000/api/profile/change-password/$studentId',
+    );
+
+    final body = jsonEncode({
+      "old_password": oldPassword,
+      "new_password": newPassword,
+      "confirmation_new_password": confirmationNewPassword,
+    });
+
+    print(body);
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      print("Password berhasil diubah");
+    } else {
+      throw Exception('Gagal ubah password: ${response.body}');
     }
   }
 }
