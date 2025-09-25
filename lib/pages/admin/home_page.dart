@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/models/dashboard_response.dart';
 import 'package:intern_libraryapp/pages/admin/book/list_book_page.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
+import 'package:intern_libraryapp/services/dashboard_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminHomePage extends StatefulWidget {
@@ -12,11 +14,17 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   String adminName = '';
+  late Dashboard dashboard = Dashboard(
+    totalBook: 0,
+    totalAdmin: 0,
+    totalStudent: 0,
+  );
 
   @override
   void initState() {
     super.initState();
     loadUserData();
+    fetchDashboard();
   }
 
   Future<void> loadUserData() async {
@@ -25,6 +33,17 @@ class _AdminHomePageState extends State<AdminHomePage> {
     setState(() {
       adminName = prefs.getString('name') ?? 'Tidak Diketahui';
     });
+  }
+
+  Future<void> fetchDashboard() async {
+    try {
+      final response = await DashboardService().getDashboard();
+      setState(() {
+        dashboard = response.data;
+      });
+    } catch (e) {
+      print('Gagal mengambil dashboard: $e');
+    }
   }
 
   String getInitials(String name) {
@@ -61,6 +80,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                 backgroundImage: NetworkImage(
                   'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(adminName))}',
                 ),
+                backgroundColor: Color.fromARGB(202, 237, 93, 93),
               ),
               const SizedBox(height: 16),
               Text(
@@ -70,8 +90,68 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 24),
-              const Divider(),
+              Container(
+                margin: EdgeInsets.symmetric(vertical: 20),
+                padding: EdgeInsets.all(15),
+                decoration: BoxDecoration(
+                  color: Color(0xFFed5d5e),
+                  borderRadius: BorderRadius.circular(3),
+                ),
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Column(
+                        children: [
+                          Text(
+                            "Total Admin",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            dashboard.totalAdmin.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 25),
+                      Column(
+                        children: [
+                          Text(
+                            "Total Siswa",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            dashboard.totalStudent.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(width: 25),
+                      Column(
+                        children: [
+                          Text(
+                            "Total Buku",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          Text(
+                            dashboard.totalBook.toString(),
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               ListTile(
                 leading: const Icon(Icons.book),
                 title: const Text('Kelola Buku'),
