@@ -30,7 +30,7 @@ class _LendingHistoryPageState extends State<LendingHistoryPage>
       });
     } catch (e) {
       setState(() => isLoading = false);
-      print('Gagal mengambil data: $e');
+      // print('Gagal mengambil data: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal mengambil data peminjaman')),
       );
@@ -74,6 +74,7 @@ class _LendingHistoryPageState extends State<LendingHistoryPage>
     }
 
     return Card(
+      // color: Colors.white,
       margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
       child: Padding(
@@ -81,23 +82,6 @@ class _LendingHistoryPageState extends State<LendingHistoryPage>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Gambar cover (placeholder jika tidak ada)
-            // ClipRRect(
-            //   borderRadius: BorderRadius.circular(8),
-            //   child: Image.network(
-            //     item.coverUrl ??
-            //         'https://via.placeholder.com/80x120?text=No+Cover',
-            //     width: 80,
-            //     height: 120,
-            //     fit: BoxFit.cover,
-            //     errorBuilder: (_, __, ___) => Container(
-            //       width: 80,
-            //       height: 120,
-            //       color: Colors.grey[300],
-            //       child: Icon(Icons.image_not_supported),
-            //     ),
-            //   ),
-            // ),
             SizedBox(width: 12),
             Expanded(
               child: Column(
@@ -110,23 +94,21 @@ class _LendingHistoryPageState extends State<LendingHistoryPage>
                   SizedBox(height: 4),
                   Text('Penulis: ${item.bookAuthor}'),
                   SizedBox(height: 4),
-                  Text('Mulai: ${formatter.format(item.startDate)}'),
-                  Text('Berakhir: ${formatter.format(item.endDate)}'),
-                  SizedBox(height: 8),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
-                      border: Border.all(color: statusColor),
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      statusText,
-                      style: TextStyle(
-                        color: statusColor,
-                        fontWeight: FontWeight.bold,
+                  Text(
+                    'Tanggal Pinjam: ${formatter.format(item.startDate)} - ${formatter.format(item.endDate)}',
+                  ),
+                  SizedBox(height: 4),
+                  Row(
+                    children: [
+                      Text('Status: '),
+                      Text(
+                        statusText,
+                        style: TextStyle(
+                          color: statusColor,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
@@ -140,7 +122,10 @@ class _LendingHistoryPageState extends State<LendingHistoryPage>
   Widget buildTabContent(String status) {
     final filtered = filterByStatus(status);
     if (filtered.isEmpty) return Center(child: Text('Tidak ada data'));
-    return ListView(children: filtered.map(buildLendingCard).toList());
+    return ListView(
+      padding: const EdgeInsets.only(top: 16),
+      children: filtered.map(buildLendingCard).toList(),
+    );
   }
 
   @override
@@ -150,6 +135,8 @@ class _LendingHistoryPageState extends State<LendingHistoryPage>
         title: Text('Riwayat Peminjaman'),
         bottom: TabBar(
           controller: _tabController,
+          labelColor: Color(0xFFed5d5e),
+          indicatorColor: Color(0xFFed5d5e),
           tabs: [
             Tab(text: 'Dipinjam'),
             Tab(text: 'Riwayat'),
