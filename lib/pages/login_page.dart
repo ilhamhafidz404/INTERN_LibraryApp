@@ -21,6 +21,10 @@ class _LoginPageState extends State<LoginPage> {
   // services
   final auth = AuthService();
 
+  //
+  bool isLoading = false;
+  bool _obscurePassword = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                   Text(
                     'Lorem Ipsum is simply dummy text of the printing and typesetting industry. ',
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 14,
                       height: 1.5,
                       shadows: [
@@ -162,39 +166,57 @@ class _LoginPageState extends State<LoginPage> {
                           TextFormField(
                             controller: _passwordController,
                             cursorColor: Colors.black87,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Password',
-                              floatingLabelStyle: TextStyle(
+                              floatingLabelStyle: const TextStyle(
                                 color: Colors.black54,
                                 fontWeight: FontWeight.bold,
                               ),
-                              border: OutlineInputBorder(),
-                              prefixIcon: Icon(
+                              border: const OutlineInputBorder(),
+                              prefixIcon: const Icon(
                                 Icons.lock_outlined,
                                 color: Color(0xFFed5d5e),
                               ),
-                              enabledBorder: OutlineInputBorder(
+                              enabledBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: Color(0xFFe9e9e9),
                                 ),
                               ),
-                              focusedBorder: OutlineInputBorder(
+                              focusedBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: Colors.black38,
                                   width: 1,
                                 ),
                               ),
-                              errorBorder: OutlineInputBorder(
+                              errorBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red),
                               ),
-                              focusedErrorBorder: OutlineInputBorder(
+                              focusedErrorBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(
                                   color: Colors.red,
                                   width: 2,
                                 ),
                               ),
+
+                              // tombol show/hide password
+                              suffixIcon: IconButton(
+                                icon: Opacity(
+                                  opacity: 0.5,
+                                  child: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                    color: Colors.black54,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
                             ),
-                            obscureText: true,
+                            obscureText: _obscurePassword,
                             validator: (value) =>
                                 (value == null || value.isEmpty)
                                 ? 'Password wajib diisi'
@@ -204,53 +226,67 @@ class _LoginPageState extends State<LoginPage> {
                           const SizedBox(height: 24),
 
                           ElevatedButton(
-                            onPressed: () async {
-                              try {
-                                final loginResponse = await AuthService().login(
-                                  _usernameController.text,
-                                  _passwordController.text,
-                                );
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    setState(() {
+                                      isLoading = true;
+                                    });
 
-                                final token = loginResponse.data?.token ?? '';
-                                final authData = loginResponse.data?.auth;
+                                    try {
+                                      final loginResponse = await AuthService()
+                                          .login(
+                                            _usernameController.text,
+                                            _passwordController.text,
+                                          );
 
-                                if (authData != null) {
-                                  await saveAuth(
-                                    token,
-                                    authData.id,
-                                    authData.name,
-                                    authData.username,
-                                  );
-                                }
+                                      final token =
+                                          loginResponse.data?.token ?? '';
+                                      final authData = loginResponse.data?.auth;
 
-                                if (authData?.level == "admin") {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => AdminHomePage(),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (_) => MainPage(),
-                                    ),
-                                  );
-                                }
-                              } catch (e) {
-                                print('Login gagal: $e');
+                                      if (authData != null) {
+                                        await saveAuth(
+                                          token,
+                                          authData.id,
+                                          authData.name,
+                                          authData.username,
+                                        );
+                                      }
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      extractErrorMessage(e.toString()),
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            child: const Text('Masuk'),
+                                      if (authData?.level == "admin") {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => AdminHomePage(),
+                                          ),
+                                        );
+                                      } else {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) => MainPage(),
+                                          ),
+                                        );
+                                      }
+                                    } catch (e) {
+                                      print('Login gagal: $e');
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            extractErrorMessage(e.toString()),
+                                          ),
+                                        ),
+                                      );
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() {
+                                          isLoading = false;
+                                        });
+                                      }
+                                    }
+                                  },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Color(0xFFed5d5e),
                               foregroundColor: Colors.white,
@@ -259,6 +295,16 @@ class _LoginPageState extends State<LoginPage> {
                                 borderRadius: BorderRadius.circular(10),
                               ),
                             ),
+                            child: isLoading
+                                ? const SizedBox(
+                                    height: 20,
+                                    width: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Text('Masuk'),
                           ),
 
                           const SizedBox(height: 100),
