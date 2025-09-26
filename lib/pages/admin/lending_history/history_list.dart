@@ -160,7 +160,7 @@ class _AdminLendingHistoryListPageState
                         ),
                         onSelected: (value) {
                           if (value == 'edit') {
-                            showEditLendingDialog(item);
+                            showLendingDialog(item: item);
                           } else if (value == 'delete') {
                             showDeleteConfirmation(item);
                           }
@@ -252,69 +252,28 @@ class _AdminLendingHistoryListPageState
   }
 
   // Dialog edit (sama seperti add tapi sudah terisi)
-  Future<void> showEditLendingDialog(LendingHistory item) async {
-    String? selectedStudent = item.studentId.toString();
-    String? selectedBook = item.bookId.toString();
-    DateTime? startDate = item.startDate;
-    DateTime? endDate = item.endDate;
-
-    await showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) => Padding(
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
-          left: 25,
-          right: 25,
-          top: 25,
-        ),
-        child: StatefulBuilder(
-          builder: (context, setModalState) {
-            return SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Edit Peminjaman",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  // ... masukkan field select siswa, select buku, tanggal mulai & akhir
-                  // gunakan selectedStudent, selectedBook, startDate, endDate
-                  // lalu tombol simpan memanggil LendingHistoryService().updateHistory(...)
-                ],
-              ),
-            );
-          },
-        ),
-      ),
-    );
-  }
-
-  Future<void> showAddLendingDialog() async {
-    String? selectedStudent;
-    String? selectedBook;
-    DateTime? startDate;
-    DateTime? endDate;
+  Future<void> showLendingDialog({LendingHistory? item}) async {
+    String? selectedStudent = item?.studentId.toString();
+    String? selectedBook = item?.bookId.toString();
+    DateTime? startDate = item?.startDate;
+    DateTime? endDate = item?.endDate;
+    String? selectedStatus = item?.status; // loaned, returned, late return
 
     List<Student> students = [];
     List<Book> books = [];
 
-    // ambil data dari API
+    // ambil data siswa dan buku
     try {
       final studentResponse = await StudentService().getStudents();
-      setState(() {
-        students = studentResponse.data;
-      });
+      students = studentResponse.data;
 
       final bookResponse = await BookService().getBooks();
-      setState(() {
-        books = bookResponse.data;
-      });
+      books = bookResponse.data;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Gagal mengambil data siswa/buku')),
       );
+      return;
     }
 
     await showModalBottomSheet(
@@ -333,53 +292,50 @@ class _AdminLendingHistoryListPageState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Tambah Data Peminjaman",
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  Text(
+                    item == null ? "Tambah Data Peminjaman" : "Edit Peminjaman",
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 16),
 
-                  // Pilih Siswa
+                  // Dropdown Siswa
                   DropdownButtonFormField<String>(
                     value: selectedStudent,
                     decoration: const InputDecoration(
                       labelText: "Pilih Siswa",
                       isDense: true,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 12,
-                      ),
                     ),
-                    items: students.map((s) {
-                      return DropdownMenuItem(
-                        value: s.id.toString(),
-                        child: Text("${s.name} - ${s.nisn}"),
-                      );
-                    }).toList(),
+                    items: students
+                        .map(
+                          (s) => DropdownMenuItem(
+                            value: s.id.toString(),
+                            child: Text("${s.name} - ${s.nisn}"),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) =>
                         setModalState(() => selectedStudent = value),
-                    style: const TextStyle(fontSize: 14, color: Colors.black),
                   ),
-
                   const SizedBox(height: 8),
 
-                  // Pilih Buku
+                  // Dropdown Buku
                   DropdownButtonFormField<String>(
                     value: selectedBook,
                     decoration: const InputDecoration(
                       labelText: "Pilih Buku",
                       isDense: true,
-                      contentPadding: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 12,
-                      ),
                     ),
-                    items: books.map((s) {
-                      return DropdownMenuItem(
-                        value: s.id.toString(),
-                        child: Text(s.title),
-                      );
-                    }).toList(),
+                    items: books
+                        .map(
+                          (b) => DropdownMenuItem(
+                            value: b.id.toString(),
+                            child: Text(b.title),
+                          ),
+                        )
+                        .toList(),
                     onChanged: (value) =>
                         setModalState(() => selectedBook = value),
                   ),
@@ -394,9 +350,8 @@ class _AdminLendingHistoryListPageState
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null) {
+                      if (picked != null)
                         setModalState(() => startDate = picked);
-                      }
                     },
                     child: InputDecorator(
                       decoration: const InputDecoration(
@@ -411,7 +366,7 @@ class _AdminLendingHistoryListPageState
                   ),
                   const SizedBox(height: 8),
 
-                  // Tanggal Pengembalian
+                  // Tanggal Kembali
                   InkWell(
                     onTap: () async {
                       final picked = await showDatePicker(
@@ -420,9 +375,7 @@ class _AdminLendingHistoryListPageState
                         firstDate: DateTime(2000),
                         lastDate: DateTime(2100),
                       );
-                      if (picked != null) {
-                        setModalState(() => endDate = picked);
-                      }
+                      if (picked != null) setModalState(() => endDate = picked);
                     },
                     child: InputDecorator(
                       decoration: const InputDecoration(
@@ -435,15 +388,36 @@ class _AdminLendingHistoryListPageState
                       ),
                     ),
                   ),
+                  const SizedBox(height: 8),
+
+                  // Dropdown Status hanya untuk edit
+                  if (item != null)
+                    DropdownButtonFormField<String>(
+                      value: selectedStatus,
+                      decoration: const InputDecoration(labelText: "Status"),
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'loaned',
+                          child: Text("Dipinjam"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'returned',
+                          child: Text("Dikembalikan"),
+                        ),
+                        DropdownMenuItem(
+                          value: 'late returned',
+                          child: Text("Telat Pengembalian"),
+                        ),
+                      ],
+                      onChanged: (value) =>
+                          setModalState(() => selectedStatus = value),
+                    ),
                   const SizedBox(height: 16),
 
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFed5d5e),
                       minimumSize: const Size(double.infinity, 48),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
                     ),
                     onPressed: () async {
                       if (selectedStudent == null ||
@@ -457,20 +431,37 @@ class _AdminLendingHistoryListPageState
                       }
 
                       try {
-                        // Panggil API tambah peminjaman
-                        final _ = await LendingHistoryService().postHistory(
-                          studentId: int.parse(selectedStudent!),
-                          bookId: int.parse(selectedBook!),
-                          startDate: DateFormat(
-                            'yyyy-MM-dd',
-                          ).format(startDate!),
-                          endDate: DateFormat('yyyy-MM-dd').format(endDate!),
-                        );
+                        if (item == null) {
+                          // Tambah
+                          await LendingHistoryService().postHistory(
+                            studentId: int.parse(selectedStudent!),
+                            bookId: int.parse(selectedBook!),
+                            startDate: DateFormat(
+                              'yyyy-MM-dd',
+                            ).format(startDate!),
+                            endDate: DateFormat('yyyy-MM-dd').format(endDate!),
+                          );
+                        } else {
+                          // Edit
+                          await LendingHistoryService().updateHistory(
+                            id: item.id,
+                            studentId: int.parse(selectedStudent!),
+                            bookId: int.parse(selectedBook!),
+                            startDate: DateFormat(
+                              'yyyy-MM-dd',
+                            ).format(startDate!),
+                            endDate: DateFormat('yyyy-MM-dd').format(endDate!),
+                            status: selectedStatus ?? 'loaned',
+                          );
+                        }
 
-                        // Jika berhasil
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text("Berhasil menambahkan data!"),
+                            content: Text(
+                              item == null
+                                  ? "Berhasil menambahkan data!"
+                                  : "Berhasil memperbarui data!",
+                            ),
                             backgroundColor: Colors.green,
                           ),
                         );
@@ -478,10 +469,9 @@ class _AdminLendingHistoryListPageState
                         Navigator.pop(context);
                         fetchData();
                       } catch (e) {
-                        // Jika gagal
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('Gagal menambahkan data: $e'),
+                            content: Text('Gagal: $e'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -492,7 +482,6 @@ class _AdminLendingHistoryListPageState
                       style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
-
                   const SizedBox(height: 20),
                 ],
               ),
@@ -748,7 +737,7 @@ class _AdminLendingHistoryListPageState
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFed5d5e),
-        onPressed: () => showAddLendingDialog(),
+        onPressed: () => showLendingDialog(),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );

@@ -77,6 +77,50 @@ class LendingHistoryService {
     }
   }
 
+  Future<PostLendingHistoryResponse> updateHistory({
+    required int id,
+    required int studentId,
+    required int bookId,
+    required String startDate,
+    required String endDate,
+    required String status,
+  }) async {
+    final url = Uri.parse('http://192.168.49.246:3000/api/lending-history/$id');
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token');
+
+    if (token == null || token.isEmpty) {
+      throw Exception('Token tidak tersedia. Silakan login kembali.');
+    }
+
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'student_id': studentId,
+        'book_id': bookId,
+        'start_date': startDate,
+        'end_date': endDate,
+        'status': status,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      try {
+        final Map<String, dynamic> json = jsonDecode(response.body);
+        return PostLendingHistoryResponse.fromJson(json);
+      } catch (e) {
+        throw Exception('Gagal parsing response update: $e');
+      }
+    } else {
+      throw Exception('Gagal mengupdate data peminjaman: ${response.body}');
+    }
+  }
+
   Future<PostLendingHistoryResponse> deleteHistory(int id) async {
     final url = Uri.parse('http://192.168.49.246:3000/api/lending-history/$id');
 
