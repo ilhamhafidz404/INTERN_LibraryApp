@@ -77,3 +77,39 @@ class LendingHistory {
     );
   }
 }
+
+//
+
+class PostLendingHistoryResponse {
+  final String startDate;
+  final String endDate;
+
+  PostLendingHistoryResponse({required this.startDate, required this.endDate});
+
+  factory PostLendingHistoryResponse.fromJson(Map<String, dynamic> json) {
+    return PostLendingHistoryResponse(
+      startDate: json['start_date'] ?? '',
+      endDate: json['end_date'] ?? '',
+    );
+  }
+}
+
+class LendingHistoryPostResponse {
+  final bool success;
+  final String message;
+  final PostLendingHistoryResponse data;
+
+  LendingHistoryPostResponse({
+    required this.success,
+    required this.message,
+    required this.data,
+  });
+
+  factory LendingHistoryPostResponse.fromJson(Map<String, dynamic> json) {
+    return LendingHistoryPostResponse(
+      success: json['success'] ?? false,
+      message: json['message'] ?? '',
+      data: PostLendingHistoryResponse.fromJson(json['data'] ?? {}),
+    );
+  }
+}

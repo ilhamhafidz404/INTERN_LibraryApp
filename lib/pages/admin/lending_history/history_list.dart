@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/models/book_response.dart';
+import 'package:intern_libraryapp/models/student_response.dart';
+import 'package:intern_libraryapp/services/student_service.dart';
 import 'package:intl/intl.dart';
 import 'package:intern_libraryapp/models/lending_history_response.dart';
 import 'package:intern_libraryapp/services/lending_history_service.dart';
+// tambahkan service siswa dan buku
+// import 'package:intern_libraryapp/services/student_service.dart';
+import 'package:intern_libraryapp/services/book_service.dart';
 
 class AdminLendingHistoryListPage extends StatefulWidget {
   @override
@@ -168,6 +174,218 @@ class _AdminLendingHistoryListPageState
     );
   }
 
+  Future<void> showAddLendingDialog() async {
+    String? selectedStudent;
+    String? selectedBook;
+    DateTime? startDate;
+    DateTime? endDate;
+
+    List<Student> students = [];
+    List<Book> books = [];
+
+    // ambil data dari API
+    try {
+      final studentResponse = await StudentService().getStudents();
+      setState(() {
+        students = studentResponse.data;
+      });
+
+      final bookResponse = await BookService().getBooks();
+      setState(() {
+        books = bookResponse.data;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal mengambil data siswa/buku')),
+      );
+    }
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 25,
+          right: 25,
+          top: 25,
+        ),
+        child: StatefulBuilder(
+          builder: (context, setModalState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Tambah Data Peminjaman",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+
+                  // Pilih Siswa
+                  DropdownButtonFormField<String>(
+                    value: selectedStudent,
+                    decoration: const InputDecoration(
+                      labelText: "Pilih Siswa",
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                    ),
+                    items: students.map((s) {
+                      return DropdownMenuItem(
+                        value: s.id.toString(),
+                        child: Text("${s.name} - ${s.nisn}"),
+                      );
+                    }).toList(),
+                    onChanged: (value) =>
+                        setModalState(() => selectedStudent = value),
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
+                  ),
+
+                  const SizedBox(height: 8),
+
+                  // Pilih Buku
+                  DropdownButtonFormField<String>(
+                    value: selectedBook,
+                    decoration: const InputDecoration(
+                      labelText: "Pilih Buku",
+                      isDense: true,
+                      contentPadding: EdgeInsets.symmetric(
+                        vertical: 10,
+                        horizontal: 12,
+                      ),
+                    ),
+                    items: books.map((s) {
+                      return DropdownMenuItem(
+                        value: s.id.toString(),
+                        child: Text(s.title),
+                      );
+                    }).toList(),
+                    onChanged: (value) =>
+                        setModalState(() => selectedBook = value),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Tanggal Pinjam
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: startDate ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null) {
+                        setModalState(() => startDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: "Tanggal Pinjam",
+                      ),
+                      child: Text(
+                        startDate == null
+                            ? "-"
+                            : DateFormat('dd MMM yyyy').format(startDate!),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+
+                  // Tanggal Pengembalian
+                  InkWell(
+                    onTap: () async {
+                      final picked = await showDatePicker(
+                        context: context,
+                        initialDate: endDate ?? DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      );
+                      if (picked != null) {
+                        setModalState(() => endDate = picked);
+                      }
+                    },
+                    child: InputDecorator(
+                      decoration: const InputDecoration(
+                        labelText: "Tanggal Pengembalian",
+                      ),
+                      child: Text(
+                        endDate == null
+                            ? "-"
+                            : DateFormat('dd MMM yyyy').format(endDate!),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFFed5d5e),
+                      minimumSize: const Size(double.infinity, 48),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.zero,
+                      ),
+                    ),
+                    onPressed: () async {
+                      if (selectedStudent == null ||
+                          selectedBook == null ||
+                          startDate == null ||
+                          endDate == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text("Lengkapi semua data")),
+                        );
+                        return;
+                      }
+
+                      try {
+                        // Panggil API tambah peminjaman
+                        final _ = await LendingHistoryService().postHistory(
+                          studentId: int.parse(selectedStudent!),
+                          bookId: int.parse(selectedBook!),
+                          startDate: DateFormat(
+                            'yyyy-MM-dd',
+                          ).format(startDate!),
+                          endDate: DateFormat('yyyy-MM-dd').format(endDate!),
+                        );
+
+                        // Jika berhasil
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text("Berhasil menambahkan data!"),
+                            backgroundColor: Colors.green,
+                          ),
+                        );
+
+                        Navigator.pop(context);
+                        fetchData();
+                      } catch (e) {
+                        // Jika gagal
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('Gagal menambahkan data: $e'),
+                            backgroundColor: Colors.red,
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text(
+                      "Simpan",
+                      style: TextStyle(color: Colors.white, fontSize: 14),
+                    ),
+                  ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
   Future<void> showFilterDialog() async {
     final bookController = TextEditingController(text: filterBook);
     final studentController = TextEditingController(text: filterStudent);
@@ -194,7 +412,7 @@ class _AdminLendingHistoryListPageState
                   ),
                   const SizedBox(height: 16),
 
-                  // Input Nama Buku
+                  // Nama Buku
                   TextField(
                     controller: bookController,
                     decoration: const InputDecoration(
@@ -209,7 +427,7 @@ class _AdminLendingHistoryListPageState
                   ),
                   const SizedBox(height: 8),
 
-                  // Input Nama Siswa
+                  // Nama Siswa
                   TextField(
                     controller: studentController,
                     decoration: const InputDecoration(
@@ -224,7 +442,7 @@ class _AdminLendingHistoryListPageState
                   ),
                   const SizedBox(height: 8),
 
-                  // Date Pickers
+                  // Date pickers
                   Row(
                     children: [
                       Expanded(
@@ -298,7 +516,7 @@ class _AdminLendingHistoryListPageState
                   ),
                   const SizedBox(height: 8),
 
-                  // Dropdown Status
+                  // Status dropdown
                   DropdownButtonFormField<String>(
                     value: filterStatus,
                     decoration: const InputDecoration(
@@ -334,23 +552,21 @@ class _AdminLendingHistoryListPageState
                     ],
                     onChanged: (value) =>
                         setModalState(() => filterStatus = value),
-                    style: const TextStyle(
-                      fontSize: 14,
-                      color: Colors.black,
-                    ), // teks hasil pilihan juga hitam
+                    style: const TextStyle(fontSize: 14, color: Colors.black),
                   ),
                   const SizedBox(height: 16),
 
-                  // Tombol Apply Filter
+                  // Buttons: apply + reset (stacked)
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFed5d5e),
                       minimumSize: const Size(double.infinity, 48),
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // tanpa rounded
+                        borderRadius: BorderRadius.zero,
                       ),
                     ),
                     onPressed: () {
+                      // simpan nilai dari controller ke state parent
                       filterBook = bookController.text;
                       filterStudent = studentController.text;
                       applyFilter();
@@ -367,10 +583,10 @@ class _AdminLendingHistoryListPageState
                       side: const BorderSide(
                         color: Color(0xFFed5d5e),
                         width: 1.5,
-                      ), // garis outline
+                      ),
                       minimumSize: const Size(double.infinity, 48),
                       shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero, // tanpa rounded
+                        borderRadius: BorderRadius.zero,
                       ),
                     ),
                     onPressed: () {
@@ -401,7 +617,7 @@ class _AdminLendingHistoryListPageState
         actions: [
           IconButton(
             icon: Icon(Icons.filter_list),
-            onPressed: showFilterDialog,
+            onPressed: () => showFilterDialog(),
           ),
         ],
       ),
@@ -410,9 +626,14 @@ class _AdminLendingHistoryListPageState
           : filteredData.isEmpty
           ? Center(child: Text("Tidak ada data"))
           : ListView(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 16, bottom: 30),
               children: filteredData.map(buildLendingCard).toList(),
             ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: const Color(0xFFed5d5e),
+        onPressed: () => showAddLendingDialog(),
+        child: const Icon(Icons.add, color: Colors.white),
+      ),
     );
   }
 }
