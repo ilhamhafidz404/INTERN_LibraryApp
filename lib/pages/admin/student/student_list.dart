@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/pages/admin/student/student_detail.dart';
 import 'package:intl/intl.dart';
 import 'package:intern_libraryapp/models/student_response.dart';
 import 'package:intern_libraryapp/services/student_service.dart';
@@ -56,7 +57,9 @@ class _AdminStudentListPageState extends State<AdminStudentListPage> {
   void _navigateToDetail(Student student) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => StudentDetailPage(student: student)),
+      MaterialPageRoute(
+        builder: (_) => AdminStudentDetailPage(student: student),
+      ),
     );
   }
 
@@ -553,39 +556,39 @@ Future<void> showStudentDialog(
 }
 
 // --- Detail Page ---
-class StudentDetailPage extends StatelessWidget {
-  final Student student;
-  const StudentDetailPage({super.key, required this.student});
+// class StudentDetailPage extends StatelessWidget {
+//   final Student student;
+//   const StudentDetailPage({super.key, required this.student});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: Text(student.name)),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            CircleAvatar(
-              radius: 40,
-              backgroundImage: NetworkImage(
-                'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(student.name))}',
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              student.name,
-              style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text("NISN: ${student.nisn}", style: const TextStyle(fontSize: 18)),
-            const SizedBox(height: 10),
-            Text(
-              "Kelas: ${student.level}",
-              style: const TextStyle(fontSize: 18),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       appBar: AppBar(title: Text(student.name)),
+//       body: Padding(
+//         padding: const EdgeInsets.all(16.0),
+//         child: Column(
+//           children: [
+//             CircleAvatar(
+//               radius: 40,
+//               backgroundImage: NetworkImage(
+//                 'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(student.name))}',
+//               ),
+//             ),
+//             const SizedBox(height: 20),
+//             Text(
+//               student.name,
+//               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+//             ),
+//             const SizedBox(height: 10),
+//             Text("NISN: ${student.nisn}", style: const TextStyle(fontSize: 18)),
+//             const SizedBox(height: 10),
+//             Text(
+//               "Kelas: ${student.level}",
+//               style: const TextStyle(fontSize: 18),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
+// }
