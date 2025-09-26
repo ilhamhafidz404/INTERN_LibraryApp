@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/models/dashboard_response.dart';
 import 'package:intern_libraryapp/pages/admin/book/list_book_page.dart';
 import 'package:intern_libraryapp/pages/admin/lending_history/history_list.dart';
+import 'package:intern_libraryapp/pages/admin/student/student_list.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
 import 'package:intern_libraryapp/services/dashboard_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -152,6 +153,18 @@ class _AdminHomePageState extends State<AdminHomePage> {
                     ],
                   ),
                 ),
+              ),
+              ListTile(
+                leading: const Icon(Icons.supervised_user_circle),
+                title: const Text('Kelola Siswa'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
+                onTap: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => AdminStudentListPage()),
+                  ),
+                },
               ),
               ListTile(
                 leading: const Icon(Icons.book),

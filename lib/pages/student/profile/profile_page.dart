@@ -3,6 +3,7 @@ import 'package:intern_libraryapp/pages/student/profile/edit_profile_page.dart';
 import 'package:intern_libraryapp/pages/student/profile/change_password_page.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
 import 'package:intern_libraryapp/pages/student/profile/lending_history_page.dart';
+import 'package:intern_libraryapp/tools/get_initial_name.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -29,21 +30,6 @@ class _ProfilePageState extends State<ProfilePage> {
       userName = prefs.getString('name') ?? 'Tidak Diketahui';
       userNISN = prefs.getString('username') ?? '-';
     });
-  }
-
-  String getInitials(String name) {
-    final parts = name.trim().split(RegExp(r'\s+'));
-
-    if (parts.length == 1) {
-      final word = parts[0];
-      final firstTwo = word.length >= 2
-          ? word.substring(0, 2).toUpperCase()
-          : word.toUpperCase(); // kalau cuma 1 huruf
-      return firstTwo.split('').join(' ');
-    } else {
-      final initials = parts.map((part) => part[0].toUpperCase()).join(' ');
-      return initials;
-    }
   }
 
   @override
