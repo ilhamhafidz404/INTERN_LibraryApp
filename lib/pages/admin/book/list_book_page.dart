@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -5,6 +6,9 @@ import 'package:intern_libraryapp/models/book_response.dart';
 import 'package:intern_libraryapp/services/book_service.dart';
 import 'package:intern_libraryapp/pages/admin/book/create_book_page.dart';
 import 'package:intern_libraryapp/pages/admin/book/update_book_page.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:csv/csv.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AdminBookListPage extends StatefulWidget {
   @override
@@ -95,13 +99,11 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
                     ),
                     style: const TextStyle(fontSize: 14),
                   ),
-                  const SizedBox(height: 8),
-
                   const SizedBox(height: 16),
 
                   Row(
                     children: [
-                      // Tombol Reset (3/12)
+                      // Tombol Reset
                       Expanded(
                         flex: 3,
                         child: OutlinedButton(
@@ -129,7 +131,7 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
                       ),
                       const SizedBox(width: 8),
 
-                      // Tombol Terapkan Filter (9/12)
+                      // Tombol Terapkan Filter
                       Expanded(
                         flex: 9,
                         child: ElevatedButton(
@@ -196,6 +198,59 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
     }
   }
 
+  // ==================== Export CSV ====================
+  Future<void> exportCSV() async {
+    if (filteredBooks.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Tidak ada data untuk diexport")),
+      );
+      return;
+    }
+
+    // Konfirmasi terlebih dahulu
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Export"),
+        content: const Text(
+          "Apakah Anda yakin ingin mengekspor data buku ke CSV?",
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text("Ya, Export", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    List<List<String>> csvData = [
+      ['Judul', 'Penulis', 'ISBN'],
+      ...filteredBooks.map((book) => [book.title, book.author, book.isbn]),
+    ];
+
+    String csv = const ListToCsvConverter().convert(csvData);
+
+    final directory = await getTemporaryDirectory();
+    final path =
+        "${directory.path}/buku_${DateTime.now().millisecondsSinceEpoch}.csv";
+    final file = File(path);
+    await file.writeAsString(csv);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("File CSV berhasil dibuat")));
+
+    // Share file
+    await Share.shareFiles([path], text: "Data Buku");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,6 +260,10 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
           IconButton(
             icon: const Icon(Icons.filter_list),
             onPressed: showFilterDialog,
+          ),
+          IconButton(
+            icon: const Icon(Icons.downloading_outlined),
+            onPressed: exportCSV,
           ),
         ],
       ),
@@ -274,7 +333,7 @@ class _AdminBookListPageState extends State<AdminBookListPage> {
               ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _createBook, // fungsi menuju halaman tambah
+        onPressed: _createBook,
         backgroundColor: const Color(0xFFed5d5e),
         tooltip: 'Tambah Buku',
         child: const Icon(Icons.add, color: Colors.white),

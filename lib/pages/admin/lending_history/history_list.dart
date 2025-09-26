@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:csv/csv.dart';
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/models/book_response.dart';
 import 'package:intern_libraryapp/models/student_response.dart';
@@ -8,6 +11,8 @@ import 'package:intern_libraryapp/services/lending_history_service.dart';
 // tambahkan service siswa dan buku
 // import 'package:intern_libraryapp/services/student_service.dart';
 import 'package:intern_libraryapp/services/book_service.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AdminLendingHistoryListPage extends StatefulWidget {
   @override
@@ -48,6 +53,74 @@ class _AdminLendingHistoryListPageState
         SnackBar(content: Text('Gagal mengambil data peminjaman')),
       );
     }
+  }
+
+  Future<void> exportCSV() async {
+    if (filteredData.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Tidak ada data untuk diexport")),
+      );
+      return;
+    }
+
+    // Tampilkan dialog konfirmasi
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi Export"),
+        content: const Text("Apakah Anda yakin ingin mengekspor data ke CSV?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text("Ya, Export", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return; // Jika batal, keluar
+
+    // Buat CSV
+    List<List<String>> csvData = [
+      [
+        'Buku',
+        'Penulis',
+        'Siswa',
+        'Tanggal Pinjam',
+        'Tanggal Kembali',
+        'Status',
+      ],
+      ...filteredData.map(
+        (item) => [
+          item.bookTitle,
+          item.bookAuthor,
+          item.studentName,
+          DateFormat('dd/MM/yyyy').format(item.startDate),
+          DateFormat('dd/MM/yyyy').format(item.endDate),
+          item.status,
+        ],
+      ),
+    ];
+
+    String csv = const ListToCsvConverter().convert(csvData);
+
+    // Simpan file
+    final directory = await getTemporaryDirectory();
+    final path =
+        "${directory.path}/peminjaman_${DateTime.now().millisecondsSinceEpoch}.csv";
+    final file = File(path);
+    await file.writeAsString(csv);
+
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text("File CSV berhasil dibuat")));
+
+    // Opsi: share file
+    await Share.shareFiles([path], text: "Data Peminjaman");
   }
 
   void applyFilter() {
@@ -742,6 +815,11 @@ class _AdminLendingHistoryListPageState
           IconButton(
             icon: Icon(Icons.filter_list),
             onPressed: () => showFilterDialog(),
+          ),
+          IconButton(
+            icon: Icon(Icons.downloading_outlined),
+            onPressed: () => exportCSV(),
+            tooltip: "Export CSV",
           ),
         ],
       ),
