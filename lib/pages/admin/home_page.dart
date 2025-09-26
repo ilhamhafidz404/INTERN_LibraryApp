@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intern_libraryapp/models/dashboard_response.dart';
 import 'package:intern_libraryapp/pages/admin/book/list_book_page.dart';
+import 'package:intern_libraryapp/pages/admin/lending_history/history_list.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
 import 'package:intern_libraryapp/services/dashboard_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -161,6 +162,20 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => AdminBookListPage()),
+                  ),
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.archive),
+                title: const Text('Kelola Peminjaman'),
+                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
+                onTap: () => {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => AdminLendingHistoryListPage(),
+                    ),
                   ),
                 },
               ),
