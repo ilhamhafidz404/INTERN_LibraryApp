@@ -74,181 +74,185 @@ class _AdminHomePageState extends State<AdminHomePage> {
         centerTitle: true,
         automaticallyImplyLeading: false,
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              const SizedBox(height: 24),
-              CircleAvatar(
-                radius: 40,
-                backgroundImage: NetworkImage(
-                  'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(adminName))}',
+      body: RefreshIndicator(
+        onRefresh: fetchDashboard,
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              children: [
+                const SizedBox(height: 24),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundImage: NetworkImage(
+                    'https://ui-avatars.com/api/?name=${Uri.encodeComponent(getInitials(adminName))}',
+                  ),
+                  backgroundColor: Color.fromARGB(202, 237, 93, 93),
                 ),
-                backgroundColor: Color.fromARGB(202, 237, 93, 93),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                adminName,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.symmetric(vertical: 20),
-                padding: EdgeInsets.all(15),
-                decoration: BoxDecoration(
-                  color: Color(0xFFed5d5e),
-                  borderRadius: BorderRadius.circular(3),
-                ),
-                child: Center(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            "Total Admin",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            dashboard.totalAdmin.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 25),
-                      Column(
-                        children: [
-                          Text(
-                            "Total Siswa",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            dashboard.totalStudent.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(width: 25),
-                      Column(
-                        children: [
-                          Text(
-                            "Total Buku",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                          Text(
-                            dashboard.totalBook.toString(),
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                const SizedBox(height: 16),
+                Text(
+                  adminName,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              ),
-              if (adminRole == "super_admin")
+                Container(
+                  margin: EdgeInsets.symmetric(vertical: 20),
+                  padding: EdgeInsets.all(15),
+                  decoration: BoxDecoration(
+                    color: Color(0xFFed5d5e),
+                    borderRadius: BorderRadius.circular(3),
+                  ),
+                  child: Center(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            Text(
+                              "Total Admin",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Text(
+                              dashboard.totalAdmin.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(width: 25),
+                        Column(
+                          children: [
+                            Text(
+                              "Total Siswa",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Text(
+                              dashboard.totalStudent.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(width: 25),
+                        Column(
+                          children: [
+                            Text(
+                              "Total Buku",
+                              style: TextStyle(color: Colors.white),
+                            ),
+                            Text(
+                              dashboard.totalBook.toString(),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (adminRole == "super_admin")
+                  ListTile(
+                    leading: const Icon(Icons.verified_user),
+                    title: const Text('Kelola Admin'),
+                    trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => SuperAdminListAdminPage(),
+                        ),
+                      );
+                    },
+                  ),
                 ListTile(
-                  leading: const Icon(Icons.verified_user),
-                  title: const Text('Kelola Admin'),
+                  leading: const Icon(Icons.supervised_user_circle),
+                  title: const Text('Kelola Siswa'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () {
+                  // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
+                  onTap: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => AdminStudentListPage()),
+                    ),
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.book),
+                  title: const Text('Kelola Buku'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
+                  onTap: () => {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => AdminBookListPage()),
+                    ),
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.archive),
+                  title: const Text('Kelola Peminjaman'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
+                  onTap: () => {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (_) => SuperAdminListAdminPage(),
+                        builder: (_) => AdminLendingHistoryListPage(),
+                      ),
+                    ),
+                  },
+                ),
+                ListTile(
+                  leading: const Icon(Icons.logout),
+                  title: const Text('Logout'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: Text('Konfirmasi Logout'),
+                        content: Text(
+                          'Apakah Anda yakin ingin keluar dari akun?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () =>
+                                Navigator.pop(context), // tutup dialog
+                            child: Text('Batal'),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              final prefs =
+                                  await SharedPreferences.getInstance();
+                              await prefs.clear(); // hapus semua data lokal
+
+                              // tutup dialog lalu pindah ke login page
+                              Navigator.of(context).pushAndRemoveUntil(
+                                MaterialPageRoute(builder: (_) => LoginPage()),
+                                (route) => false,
+                              );
+                            },
+                            child: Text(
+                              'Logout',
+                              style: TextStyle(color: Colors.red),
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   },
                 ),
-              ListTile(
-                leading: const Icon(Icons.supervised_user_circle),
-                title: const Text('Kelola Siswa'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
-                onTap: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => AdminStudentListPage()),
-                  ),
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.book),
-                title: const Text('Kelola Buku'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
-                onTap: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => AdminBookListPage()),
-                  ),
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.archive),
-                title: const Text('Kelola Peminjaman'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                // onTap: () => Navigator.pushNamed(context, '/edit-profile'),
-                onTap: () => {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => AdminLendingHistoryListPage(),
-                    ),
-                  ),
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.logout),
-                title: const Text('Logout'),
-                trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                onTap: () {
-                  showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                      title: Text('Konfirmasi Logout'),
-                      content: Text(
-                        'Apakah Anda yakin ingin keluar dari akun?',
-                      ),
-                      actions: [
-                        TextButton(
-                          onPressed: () =>
-                              Navigator.pop(context), // tutup dialog
-                          child: Text('Batal'),
-                        ),
-                        TextButton(
-                          onPressed: () async {
-                            final prefs = await SharedPreferences.getInstance();
-                            await prefs.clear(); // hapus semua data lokal
-
-                            // tutup dialog lalu pindah ke login page
-                            Navigator.of(context).pushAndRemoveUntil(
-                              MaterialPageRoute(builder: (_) => LoginPage()),
-                              (route) => false,
-                            );
-                          },
-                          child: Text(
-                            'Logout',
-                            style: TextStyle(color: Colors.red),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

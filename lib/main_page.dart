@@ -3,17 +3,24 @@ import 'package:intern_libraryapp/pages/student/home_page.dart';
 import 'package:intern_libraryapp/pages/student/profile/profile_page.dart';
 import 'package:intern_libraryapp/pages/student/search_page.dart';
 
-class MainPage extends StatefulWidget {
-  const MainPage({super.key});
+class MainPageWithIndex extends StatefulWidget {
+  final int initialIndex;
+  const MainPageWithIndex({super.key, this.initialIndex = 0});
 
   @override
-  State<MainPage> createState() => _MainPageState();
+  State<MainPageWithIndex> createState() => _MainPageWithIndexState();
 }
 
-class _MainPageState extends State<MainPage> {
-  int _currentIndex = 0;
+class _MainPageWithIndexState extends State<MainPageWithIndex> {
+  late int _currentIndex;
 
   final List<Widget> _pages = const [HomePage(), SearchPage(), ProfilePage()];
+
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.initialIndex;
+  }
 
   @override
   Widget build(BuildContext context) {

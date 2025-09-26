@@ -16,8 +16,7 @@ class _SuperAdminListAdminPageState extends State<SuperAdminListAdminPage> {
   List<Admin> filteredData = [];
   bool isLoading = true;
 
-  String filterName = "";
-  String filterUsername = "";
+  String filter = "";
 
   @override
   void initState() {
@@ -84,10 +83,10 @@ class _SuperAdminListAdminPageState extends State<SuperAdminListAdminPage> {
     setState(() {
       filteredData = allData.where((admin) {
         final matchName = admin.name.toLowerCase().contains(
-          filterName.toLowerCase(),
+          filter.toLowerCase(),
         );
         final matchUsername = admin.username.toLowerCase().contains(
-          filterUsername.toLowerCase(),
+          filter.toLowerCase(),
         );
         return matchName && matchUsername;
       }).toList();
@@ -96,15 +95,13 @@ class _SuperAdminListAdminPageState extends State<SuperAdminListAdminPage> {
 
   void resetFilter() {
     setState(() {
-      filterName = "";
-      filterUsername = "";
+      filter = "";
       filteredData = allData;
     });
   }
 
   Future<void> _showFilterDialog() async {
-    final nameController = TextEditingController(text: filterName);
-    final usernameController = TextEditingController(text: filterUsername);
+    final filterController = TextEditingController(text: filter);
 
     await showModalBottomSheet(
       context: context,
@@ -128,51 +125,63 @@ class _SuperAdminListAdminPageState extends State<SuperAdminListAdminPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Filter by Name
+                  // Filter
                   TextField(
-                    controller: nameController,
+                    controller: filterController,
                     decoration: const InputDecoration(labelText: "Nama"),
                   ),
-                  const SizedBox(height: 8),
 
-                  // Filter by Username
-                  TextField(
-                    controller: usernameController,
-                    decoration: const InputDecoration(labelText: "Username"),
-                  ),
                   const SizedBox(height: 16),
 
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFed5d5e),
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    onPressed: () {
-                      filterName = nameController.text;
-                      filterUsername = usernameController.text;
-                      applyFilter();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Terapkan Filter",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFed5d5e)),
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    onPressed: () {
-                      resetFilter();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Reset",
-                      style: TextStyle(color: Color(0xFFed5d5e)),
-                    ),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFed5d5e)),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            resetFilter();
+                            Navigator.pop(context);
+                          },
+                          child: const Icon(
+                            Icons.refresh,
+                            color: Color(0xFFed5d5e),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        flex: 9,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFed5d5e),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            filter = filterController.text;
+                            applyFilter();
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Terapkan Filter",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 20),
@@ -199,10 +208,13 @@ class _SuperAdminListAdminPageState extends State<SuperAdminListAdminPage> {
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFed5d5e)),
+            )
           : filteredData.isEmpty
           ? const Center(child: Text("Tidak ada data admin"))
           : RefreshIndicator(
+              color: Color(0xFFed5d5e),
               onRefresh: fetchData,
               child: ListView.builder(
                 itemCount: filteredData.length,
@@ -361,6 +373,9 @@ Future<void> showAdminDialog(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFed5d5e),
                     minimumSize: const Size(double.infinity, 48),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
                   ),
                   onPressed: () async {
                     if (nameController.text.isEmpty ||

@@ -4,7 +4,7 @@ import 'package:intern_libraryapp/models/admin_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AdminService {
-  final String baseUrl = "http://192.168.49.246:3000/api";
+  final String baseUrl = "http://202.10.36.222:3000/api";
 
   /// GET all admins
   Future<AdminResponse> getAdmins() async {

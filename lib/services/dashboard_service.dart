@@ -4,7 +4,7 @@ import 'package:intern_libraryapp/models/dashboard_response.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DashboardService {
-  static const String baseUrl = 'http://192.168.49.246:3000/api';
+  static const String baseUrl = 'http://202.10.36.222:3000/api';
 
   Future<DashboardResponse> getDashboard() async {
     print("test");

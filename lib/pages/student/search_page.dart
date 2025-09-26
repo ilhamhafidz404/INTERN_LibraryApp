@@ -59,39 +59,43 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Cari Buku')),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          children: [
-            TextFormField(
-              controller: searchController,
-              decoration: const InputDecoration(
-                labelText: 'Search by title...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.black38, width: 1),
-                ),
-                floatingLabelStyle: TextStyle(
-                  color: Colors.black54,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-            const SizedBox(height: 16),
-            if (isLoading)
-              const Center(child: CircularProgressIndicator())
-            else if (filteredBooks.isEmpty)
-              const Center(child: Text("Buku tidak ditemukan"))
-            else
-              Expanded(
-                child: ListView.builder(
-                  itemCount: filteredBooks.length,
-                  itemBuilder: (context, index) =>
-                      buildVerticalBookCard(filteredBooks[index]),
+      body: RefreshIndicator(
+        color: Color(0xFFed5d5e),
+        onRefresh: fetchBooks,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              TextFormField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  labelText: 'Search by title...',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.black38, width: 1),
+                  ),
+                  floatingLabelStyle: TextStyle(
+                    color: Colors.black54,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-          ],
+              const SizedBox(height: 16),
+              if (isLoading)
+                const Center(child: CircularProgressIndicator())
+              else if (filteredBooks.isEmpty)
+                const Center(child: Text("Buku tidak ditemukan"))
+              else
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: filteredBooks.length,
+                    itemBuilder: (context, index) =>
+                        buildVerticalBookCard(filteredBooks[index]),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

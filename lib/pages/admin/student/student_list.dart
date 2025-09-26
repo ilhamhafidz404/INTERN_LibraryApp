@@ -171,39 +171,57 @@ class _AdminStudentListPageState extends State<AdminStudentListPage> {
                   ),
                   const SizedBox(height: 16),
 
-                  // Apply Button
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFed5d5e),
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    onPressed: () {
-                      filterName = nameController.text;
-                      filterNisn = nisnController.text;
-                      applyStudentFilter();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Terapkan Filter",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Color(0xFFed5d5e)),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            resetStudentFilter();
+                            Navigator.pop(context);
+                          },
+                          child: const Icon(
+                            Icons.refresh,
+                            color: Color(0xFFed5d5e),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
 
-                  // Reset Button
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Color(0xFFed5d5e)),
-                      minimumSize: const Size(double.infinity, 48),
-                    ),
-                    onPressed: () {
-                      resetStudentFilter();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Reset",
-                      style: TextStyle(color: Color(0xFFed5d5e)),
-                    ),
+                      Expanded(
+                        flex: 9,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFed5d5e),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            filterName = nameController.text;
+                            filterNisn = nisnController.text;
+                            applyStudentFilter();
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Terapkan Filter",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
 
                   const SizedBox(height: 20),
@@ -230,10 +248,13 @@ class _AdminStudentListPageState extends State<AdminStudentListPage> {
         ],
       ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFed5d5e)),
+            )
           : filteredData.isEmpty
           ? const Center(child: Text("Tidak ada data siswa"))
           : RefreshIndicator(
+              color: Color(0xFFed5d5e),
               onRefresh: fetchData,
               child: ListView.builder(
                 itemCount: filteredData.length,
@@ -432,6 +453,9 @@ Future<void> showStudentDialog(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFed5d5e),
                     minimumSize: const Size(double.infinity, 48),
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                    ),
                   ),
                   onPressed: () async {
                     if (nisnController.text.isEmpty ||

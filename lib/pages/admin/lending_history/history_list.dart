@@ -418,6 +418,9 @@ class _AdminLendingHistoryListPageState
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFed5d5e),
                       minimumSize: const Size(double.infinity, 48),
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
                     ),
                     onPressed: () async {
                       if (selectedStudent == null ||
@@ -662,47 +665,62 @@ class _AdminLendingHistoryListPageState
                   ),
                   const SizedBox(height: 16),
 
-                  // Buttons: apply + reset (stacked)
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFed5d5e),
-                      minimumSize: const Size(double.infinity, 48),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
+                  Row(
+                    children: [
+                      // Tombol Reset (3/12)
+                      Expanded(
+                        flex: 3,
+                        child: OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(
+                              color: Color(0xFFed5d5e),
+                              width: 1.5,
+                            ),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            resetFilter();
+                            Navigator.pop(context);
+                          },
+                          child: const Icon(
+                            Icons.refresh,
+                            color: Color(0xFFed5d5e),
+                          ),
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-                      // simpan nilai dari controller ke state parent
-                      filterBook = bookController.text;
-                      filterStudent = studentController.text;
-                      applyFilter();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Terapkan Filter",
-                      style: TextStyle(color: Colors.white, fontSize: 14),
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(
-                        color: Color(0xFFed5d5e),
-                        width: 1.5,
+                      const SizedBox(width: 8),
+
+                      // Tombol Terapkan Filter (9/12)
+                      Expanded(
+                        flex: 9,
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFFed5d5e),
+                            minimumSize: const Size(double.infinity, 48),
+                            shape: const RoundedRectangleBorder(
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
+                              ),
+                            ),
+                          ),
+                          onPressed: () {
+                            filterBook = bookController.text;
+                            filterStudent = studentController.text;
+                            applyFilter();
+                            Navigator.pop(context);
+                          },
+                          child: const Text(
+                            "Terapkan Filter",
+                            style: TextStyle(color: Colors.white, fontSize: 14),
+                          ),
+                        ),
                       ),
-                      minimumSize: const Size(double.infinity, 48),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    onPressed: () {
-                      resetFilter();
-                      Navigator.pop(context);
-                    },
-                    child: const Text(
-                      "Reset",
-                      style: TextStyle(color: Color(0xFFed5d5e), fontSize: 14),
-                    ),
+                    ],
                   ),
 
                   const SizedBox(height: 20),
@@ -728,12 +746,16 @@ class _AdminLendingHistoryListPageState
         ],
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
+          ? Center(child: CircularProgressIndicator(color: Color(0xFFed5d5e)))
           : filteredData.isEmpty
           ? Center(child: Text("Tidak ada data"))
-          : ListView(
-              padding: const EdgeInsets.only(top: 16, bottom: 30),
-              children: filteredData.map(buildLendingCard).toList(),
+          : RefreshIndicator(
+              color: Color(0xFFed5d5e),
+              onRefresh: fetchData,
+              child: ListView(
+                padding: const EdgeInsets.only(top: 16, bottom: 30),
+                children: filteredData.map(buildLendingCard).toList(),
+              ),
             ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xFFed5d5e),

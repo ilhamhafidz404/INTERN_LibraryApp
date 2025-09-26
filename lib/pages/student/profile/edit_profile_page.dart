@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:intern_libraryapp/main_page.dart';
+import 'package:intern_libraryapp/pages/student/profile/profile_page.dart';
 import 'package:intern_libraryapp/services/profile_service.dart';
 import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,6 +87,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Data berhasil disimpan')));
+
+      // Navigasi ke MainPage dan langsung ke Profile (index 2)
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => MainPageWithIndex(initialIndex: 2),
+        ),
+        (route) => false,
+      );
     }
   }
 

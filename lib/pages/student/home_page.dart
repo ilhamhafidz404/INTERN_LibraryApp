@@ -57,97 +57,103 @@ class _HomePageState extends State<HomePage> {
 
     return Scaffold(
       body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  // Header
-                  Stack(
-                    children: [
-                      Image.asset(
-                        'assets/images/login_bg.jpg',
-                        width: double.infinity,
-                        height: screenHeight * 0.3,
-                        fit: BoxFit.cover,
-                      ),
-                      Container(
-                        width: double.infinity,
-                        height: screenHeight * 0.3,
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.topCenter,
-                            end: Alignment.bottomCenter,
-                            colors: [Colors.transparent, Colors.black],
-                          ),
-                        ),
-                      ),
-                      Positioned(
-                        left: 16,
-                        bottom: 16,
-                        child: Text(
-                          'Halo $userName',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            shadows: [
-                              Shadow(
-                                blurRadius: 4,
-                                color: Colors.black54,
-                                offset: Offset(1, 1),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-
-                  // Content
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(16),
-                    decoration: const BoxDecoration(color: Colors.white),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFFed5d5e)),
+            )
+          : RefreshIndicator(
+              color: Color(0xFFed5d5e),
+              onRefresh: fetchBooks,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    // Header
+                    Stack(
                       children: [
-                        // Rekomendasi Buku
-                        const Text(
-                          "Rekomendasi Buku",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        Image.asset(
+                          'assets/images/login_bg.jpg',
+                          width: double.infinity,
+                          height: screenHeight * 0.3,
+                          fit: BoxFit.cover,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          height: screenHeight * 0.3,
+                          decoration: const BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.topCenter,
+                              end: Alignment.bottomCenter,
+                              colors: [Colors.transparent, Colors.black],
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: books
-                                .take(5)
-                                .map((book) => buildBookCard(book))
-                                .toList(),
+                        Positioned(
+                          left: 16,
+                          bottom: 16,
+                          child: Text(
+                            'Halo $userName',
+                            style: TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                              shadows: [
+                                Shadow(
+                                  blurRadius: 4,
+                                  color: Colors.black54,
+                                  offset: Offset(1, 1),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
-
-                        // Semua Buku
-                        const Text(
-                          "Semua Buku",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        Column(
-                          children: books
-                              .map((book) => buildVerticalBookCard(book))
-                              .toList(),
                         ),
                       ],
                     ),
-                  ),
-                ],
+
+                    // Content
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(16),
+                      decoration: const BoxDecoration(color: Colors.white),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Rekomendasi Buku
+                          const Text(
+                            "Rekomendasi Buku",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SingleChildScrollView(
+                            scrollDirection: Axis.horizontal,
+                            child: Row(
+                              children: books
+                                  .take(5)
+                                  .map((book) => buildBookCard(book))
+                                  .toList(),
+                            ),
+                          ),
+
+                          // Semua Buku
+                          const Text(
+                            "Semua Buku",
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          Column(
+                            children: books
+                                .map((book) => buildVerticalBookCard(book))
+                                .toList(),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

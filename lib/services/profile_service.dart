@@ -13,7 +13,7 @@ class ProfileService {
       throw Exception('Student ID not found in SharedPreferences');
     }
 
-    final url = Uri.parse('http://192.168.49.246:3000/api/profile/$studentId');
+    final url = Uri.parse('http://202.10.36.222:3000/api/profile/$studentId');
 
     final response = await http.get(
       url,
@@ -53,7 +53,7 @@ class ProfileService {
       throw Exception('ID atau token tidak ditemukan di SharedPreferences');
     }
 
-    final url = Uri.parse('http://192.168.49.246:3000/api/profile/$studentId');
+    final url = Uri.parse('http://202.10.36.222:3000/api/profile/$studentId');
 
     final body = jsonEncode({
       "name": name,
@@ -98,7 +98,7 @@ class ProfileService {
     }
 
     final url = Uri.parse(
-      'http://192.168.49.246:3000/api/profile/change-password/$studentId',
+      'http://202.10.36.222:3000/api/profile/change-password/$studentId',
     );
 
     final body = jsonEncode({

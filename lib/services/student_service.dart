@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/student_response.dart';
 
 class StudentService {
-  final String baseUrl = "http://192.168.49.246:3000/api";
+  final String baseUrl = "http://202.10.36.222:3000/api";
 
   /// Get all students
   Future<StudentResponse> getStudents() async {
@@ -51,7 +51,7 @@ class StudentService {
     required String gender,
     required String level,
   }) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/students');
+    final url = Uri.parse('http://202.10.36.222:3000/api/students');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -112,7 +112,7 @@ class StudentService {
     required String level,
     String? photoPath, // opsional
   }) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/students/$id');
+    final url = Uri.parse('http://202.10.36.222:3000/api/students/$id');
 
     print(url);
 
@@ -166,7 +166,7 @@ class StudentService {
 
   /// Delete student
   Future<StudentResponse> deleteStudent(int id) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/students/$id');
+    final url = Uri.parse('http://202.10.36.222:3000/api/students/$id');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

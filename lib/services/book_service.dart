@@ -7,7 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class BookService {
   Future<BookResponse> getBooks() async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/books');
+    final url = Uri.parse('http://202.10.36.222:3000/api/books');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -46,7 +46,7 @@ class BookService {
     required String total,
     required File coverFile,
   }) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/books');
+    final url = Uri.parse('http://202.10.36.222:3000/api/books');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -93,7 +93,7 @@ class BookService {
     required String total,
     required File coverFile,
   }) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/books/$id');
+    final url = Uri.parse('http://202.10.36.222:3000/api/books/$id');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -127,7 +127,7 @@ class BookService {
   }
 
   Future<void> deleteBook(int id) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/books/$id');
+    final url = Uri.parse('http://202.10.36.222:3000/api/books/$id');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

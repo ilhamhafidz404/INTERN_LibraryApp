@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class LendingHistoryService {
   Future<LendingHistoryResponse> getHistories() async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/lending-history');
+    final url = Uri.parse('http://202.10.36.222:3000/api/lending-history');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -41,7 +41,7 @@ class LendingHistoryService {
     required String startDate,
     required String endDate,
   }) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/lending-history');
+    final url = Uri.parse('http://202.10.36.222:3000/api/lending-history');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -85,7 +85,7 @@ class LendingHistoryService {
     required String endDate,
     required String status,
   }) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/lending-history/$id');
+    final url = Uri.parse('http://202.10.36.222:3000/api/lending-history/$id');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');
@@ -122,7 +122,7 @@ class LendingHistoryService {
   }
 
   Future<PostLendingHistoryResponse> deleteHistory(int id) async {
-    final url = Uri.parse('http://192.168.49.246:3000/api/lending-history/$id');
+    final url = Uri.parse('http://202.10.36.222:3000/api/lending-history/$id');
 
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token');

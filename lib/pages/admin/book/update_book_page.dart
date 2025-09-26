@@ -79,7 +79,7 @@ class _AdminEditBookPageState extends State<AdminEditBookPage> {
         context,
       ).showSnackBar(SnackBar(content: Text('Buku berhasil diperbarui')));
 
-      Navigator.pop(context); // kembali ke halaman sebelumnya
+      Navigator.pop(context);
     } catch (e) {
       print('Error: $e');
       ScaffoldMessenger.of(
