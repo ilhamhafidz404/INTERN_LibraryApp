@@ -66,3 +66,26 @@ class Student {
     );
   }
 }
+
+class StudentSingleResponse {
+  final String code;
+  final Student? data;
+  final String message;
+  final bool success;
+
+  StudentSingleResponse({
+    required this.code,
+    this.data,
+    required this.message,
+    required this.success,
+  });
+
+  factory StudentSingleResponse.fromJson(Map<String, dynamic> json) {
+    return StudentSingleResponse(
+      code: json['code'] ?? '',
+      data: json['data'] != null ? Student.fromJson(json['data']) : null,
+      message: json['message'] ?? '',
+      success: json['success'] ?? false,
+    );
+  }
+}
