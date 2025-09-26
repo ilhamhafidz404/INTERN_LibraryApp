@@ -3,6 +3,7 @@ import 'package:intern_libraryapp/models/dashboard_response.dart';
 import 'package:intern_libraryapp/pages/admin/book/list_book_page.dart';
 import 'package:intern_libraryapp/pages/admin/lending_history/history_list.dart';
 import 'package:intern_libraryapp/pages/admin/student/student_list.dart';
+import 'package:intern_libraryapp/pages/admin/super_admin/admin_list.dart';
 import 'package:intern_libraryapp/pages/login_page.dart';
 import 'package:intern_libraryapp/services/dashboard_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,6 +17,7 @@ class AdminHomePage extends StatefulWidget {
 
 class _AdminHomePageState extends State<AdminHomePage> {
   String adminName = '';
+  String adminRole = '';
   late Dashboard dashboard = Dashboard(
     totalBook: 0,
     totalAdmin: 0,
@@ -34,6 +36,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
 
     setState(() {
       adminName = prefs.getString('name') ?? 'Tidak Diketahui';
+      adminRole = prefs.getString('role') ?? 'admin';
     });
   }
 
@@ -154,6 +157,20 @@ class _AdminHomePageState extends State<AdminHomePage> {
                   ),
                 ),
               ),
+              if (adminRole == "super_admin")
+                ListTile(
+                  leading: const Icon(Icons.verified_user),
+                  title: const Text('Kelola Admin'),
+                  trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SuperAdminListAdminPage(),
+                      ),
+                    );
+                  },
+                ),
               ListTile(
                 leading: const Icon(Icons.supervised_user_circle),
                 title: const Text('Kelola Siswa'),

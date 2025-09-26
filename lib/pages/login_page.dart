@@ -250,10 +250,12 @@ class _LoginPageState extends State<LoginPage> {
                                           authData.id,
                                           authData.name,
                                           authData.username,
+                                          authData.level,
                                         );
                                       }
 
-                                      if (authData?.level == "admin") {
+                                      if (authData?.level == "admin" ||
+                                          authData?.level == "super_admin") {
                                         Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(

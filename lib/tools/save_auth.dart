@@ -5,10 +5,12 @@ Future<void> saveAuth(
   int id,
   String name,
   String username,
+  String role,
 ) async {
   final prefs = await SharedPreferences.getInstance();
   await prefs.setString('token', token);
   await prefs.setInt('id', id);
   await prefs.setString('name', name);
   await prefs.setString('username', username);
+  await prefs.setString('role', role);
 }
