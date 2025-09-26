@@ -128,34 +128,70 @@ class _AdminLendingHistoryListPageState
     }
 
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 4,
       child: Padding(
         padding: const EdgeInsets.all(12.0),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(width: 12),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    item.bookTitle,
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                  // Header dengan title dan tombol ellipsis
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          item.bookTitle,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                      PopupMenuButton<String>(
+                        icon: const Icon(
+                          Icons.more_vert,
+                          color: Color.fromARGB(82, 0, 0, 0),
+                        ),
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            showEditLendingDialog(item);
+                          } else if (value == 'delete') {
+                            showDeleteConfirmation(item);
+                          }
+                        },
+                        itemBuilder: (BuildContext context) {
+                          return [
+                            const PopupMenuItem(
+                              value: 'edit',
+                              child: Text('Edit'),
+                            ),
+                            const PopupMenuItem(
+                              value: 'delete',
+                              child: Text('Hapus'),
+                            ),
+                          ];
+                        },
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text('Penulis: ${item.bookAuthor}'),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text('Siswa: ${item.studentName}'),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Text(
                     'Tanggal Pinjam: ${formatter.format(item.startDate)} - ${formatter.format(item.endDate)}',
                   ),
-                  SizedBox(height: 4),
+                  const SizedBox(height: 4),
                   Row(
                     children: [
-                      Text('Status: '),
+                      const Text('Status: '),
                       Text(
                         statusText,
                         style: TextStyle(
@@ -165,10 +201,91 @@ class _AdminLendingHistoryListPageState
                       ),
                     ],
                   ),
+                  const SizedBox(height: 10),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  // Dialog konfirmasi hapus
+  void showDeleteConfirmation(LendingHistory item) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Konfirmasi Hapus'),
+        content: const Text('Apakah Anda yakin ingin menghapus data ini?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Batal'),
+          ),
+          TextButton(
+            onPressed: () async {
+              try {
+                await LendingHistoryService().deleteHistory(item.id);
+                Navigator.pop(context);
+                fetchData();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Data berhasil dihapus'),
+                    backgroundColor: Colors.green,
+                  ),
+                );
+              } catch (e) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Gagal menghapus data: $e'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Dialog edit (sama seperti add tapi sudah terisi)
+  Future<void> showEditLendingDialog(LendingHistory item) async {
+    String? selectedStudent = item.studentId.toString();
+    String? selectedBook = item.bookId.toString();
+    DateTime? startDate = item.startDate;
+    DateTime? endDate = item.endDate;
+
+    await showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) => Padding(
+        padding: EdgeInsets.only(
+          bottom: MediaQuery.of(context).viewInsets.bottom,
+          left: 25,
+          right: 25,
+          top: 25,
+        ),
+        child: StatefulBuilder(
+          builder: (context, setModalState) {
+            return SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    "Edit Peminjaman",
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  // ... masukkan field select siswa, select buku, tanggal mulai & akhir
+                  // gunakan selectedStudent, selectedBook, startDate, endDate
+                  // lalu tombol simpan memanggil LendingHistoryService().updateHistory(...)
+                ],
+              ),
+            );
+          },
         ),
       ),
     );
